@@ -38,15 +38,6 @@ namespace IDragnev::Functional
 		constexpr void operator()(Args&&...) const noexcept { }
 	};
 
-	struct BackInserter
-	{
-		template <typename Container, typename T>
-		decltype(auto) operator()(Container& c, T&& item) const noexcept(noexcept(c.insertBack(std::forward<T>(item))))
-		{
-			return c.insertBack(std::forward<T>(item));
-		}
-	};
-
 	namespace Detail
 	{
 		template <typename... Ts>
