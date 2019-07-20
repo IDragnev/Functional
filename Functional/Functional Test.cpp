@@ -27,6 +27,13 @@ namespace FunctionalTest
 			Assert::IsFalse(LessThan{}(2, 1));
 		}
 
+		TEST_METHOD(greaterThan)
+		{
+			Assert::IsTrue(GreaterThan{}(2, 1));
+			Assert::IsFalse(GreaterThan{}(1, 1));
+			Assert::IsFalse(GreaterThan{}(1, 2));
+		}
+
 		TEST_METHOD(functorEqualTo)
 		{
 			Assert::IsTrue(EqualTo{}(1, 1));
@@ -49,9 +56,9 @@ namespace FunctionalTest
 			Assert::AreSame(ref, str);
 		}
 
-		TEST_METHOD(lessThanEqualToAndIdentityCanComputeAtCompileTime)
+		TEST_METHOD(lessThanEqualToGreaterThanAndIdentityCanComputeAtCompileTime)
 		{
-			using TrueType = std::bool_constant<LessThan{}(1, 2)>;
+			using TrueType = std::bool_constant < LessThan{}(1, 2) && GreaterThan{}(2, 1)>;
 			using FalseType = std::bool_constant<EqualTo{}(1, 2)>;
 			using ArrayOfSizeOne = std::array<int, Identity{}(1)>;
 		}
