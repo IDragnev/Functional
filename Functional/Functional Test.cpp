@@ -1,9 +1,11 @@
 #include "CppUnitTest.h"
 #include "Functional.h"
 #include <algorithm>
+#include <numeric>
 #include <string>
 #include <vector>
 #include <array>
+#include <forward_list>
 
 using namespace std::string_literals;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -213,6 +215,24 @@ namespace FunctionalTest
 		}
 
 		TEST_METHOD(flippingABinaryFunction)
+		{
+			//some existing function we can reuse
+			auto insertBack = [](auto x, auto&& container) -> decltype(auto)
+			{	
+				container.push_front(x);
+			    return std::move(container); 
+			};
+			auto nums = { 1, 2, 3, 4, 5 };
+
+			auto reversedNums = std::accumulate(std::cbegin(nums), 
+				                                std::cend(nums), 
+				                                std::forward_list<int>{}, 
+				                                flip(insertBack));
+
+			Assert::IsTrue(reversedNums == std::forward_list<int>{5, 4, 3, 2, 1});
+		}
+
+		TEST_METHOD(flipCanComputeAtCompileTime)
 		{
 			static_assert(flip(LessThan{})(2, 1));
 		}
