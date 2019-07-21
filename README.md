@@ -6,6 +6,5 @@ Useful higher-order functions and function objects for easier functional program
  - combine existing predicates
  - inverse existing predicates
  - flip binary functions
- - inverse existing predicates
  - match by key  
 and more. Examples can be found in the tests.
