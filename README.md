@@ -1,6 +1,7 @@
 # Functional
-Useful higher-order functions and function objects for easier functional programming in C++.  
-You can curry any function, compose any number of functions, superpose functions and more.  
-Examples can be seen in the tests.
-
-
+Useful higher-order functions and function objects for easier functional programming in C++:  
+ - constexpr version of std::invoke   
+ - you can curry any function  
+ - you can compose and superpose any number of functions  
+ - combine existing predicates   
+ and more. Examples can be found in the tests.
