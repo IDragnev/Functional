@@ -1,9 +1,7 @@
 ﻿#ifndef __MY_INVOKE_H_INCLUDED__
 #define __MY_INVOKE_H_INCLUDED__
 
-#include <functional>
 #include <type_traits>
-#include <utility>
 
 namespace IDragnev::Functional
 {
