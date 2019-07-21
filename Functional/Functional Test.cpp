@@ -269,7 +269,7 @@ namespace FunctionalTest
 				                    std::cend(nums),
 				                    anyOf(isPositive, isEven));
 
-			Assert::IsTrue(pos == std::cbegin(nums) + 3);
+			Assert::IsTrue(pos == std::cbegin(nums) + 1);
 		}
 	};
 }

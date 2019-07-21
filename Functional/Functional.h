@@ -164,55 +164,45 @@ namespace IDragnev::Functional
 
 	namespace Detail
 	{
-		template <typename... Args>
-		constexpr inline bool allOf(Args... args) noexcept
+		constexpr auto andAll = [](auto... args) constexpr noexcept
 		{
 			return (args && ...);
-		}
+		};
 
-		template <typename... Args>
-		constexpr inline bool anyOf(Args... args) noexcept
+		constexpr auto orAll = [](auto... args) constexpr noexcept
 		{
 			return (args || ...);
-		}
+		};
 		
-		enum class PredicateCombinationPolicy { and, or };
-
-		template <PredicateCombinationPolicy op,
-			      typename... Predicates
-		> constexpr auto 
-		combinePredicatesWith(Predicates... predicates) noexcept(areNothrowCopyConstructible<Predicates...>)
+		template <typename CombinationOp, typename... Predicates> 
+		constexpr auto 
+		combinePredicatesWith(CombinationOp op, Predicates... predicates) noexcept(areNothrowCopyConstructible<Predicates...>)
 		{
-			return [predicates...](const auto&... args) constexpr noexcept(allOf(std::is_nothrow_invocable_v<decltype(predicates), decltype(args)...>...))
+			return [op, predicates...](const auto&... args) constexpr noexcept(andAll(std::is_nothrow_invocable_v<decltype(predicates), decltype(args)...>...))
 			{
-				using PCP = PredicateCombinationPolicy;
-
-				if constexpr (op == PCP::and)
-				{
-					return allOf(predicates(args...)...);
-				}
-				else
-				{
-					return anyOf(predicates(args...)...);
-				}
+				return op(predicates(args...)...);
 			};
 		}
 	}
 
 	template <typename... Predicates>
 	constexpr inline
-	auto allOf(Predicates... predicates) noexcept(noexcept(Detail::combinePredicatesWith<Detail::PredicateCombinationPolicy::and>(predicates...)))
+	auto allOf(Predicates... predicates) noexcept(noexcept(Detail::combinePredicatesWith(Detail::andAll, predicates...)))
 	{
-		using PCP = Detail::PredicateCombinationPolicy;
-		return Detail::combinePredicatesWith<PCP::and>(predicates...);
+		using Detail::andAll;
+		using Detail::combinePredicatesWith;
+
+		return combinePredicatesWith(andAll, predicates...);
 	}
 
 	template <typename... Predicates>
 	constexpr inline
-	auto anyOf(Predicates... predicates) noexcept(noexcept(Detail::combinePredicatesWith<Detail::PredicateCombinationPolicy::or>(predicates...)))
+	auto anyOf(Predicates... predicates) noexcept(noexcept(Detail::combinePredicatesWith(Detail::orAll, predicates...)))
 	{
-		using PCP = Detail::PredicateCombinationPolicy;
-		return Detail::combinePredicatesWith<PCP::or>(predicates...);
+		using Detail::orAll;
+		using Detail::combinePredicatesWith;
+
+		return combinePredicatesWith(orAll, predicates...);
 	}
 }
 
