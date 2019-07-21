@@ -1,7 +1,6 @@
 #ifndef __FUNCTIONAL_H_INCLUDED__
 #define __FUNCTIONAL_H_INCLUDED__
 
-#include <type_traits>
 #include "invoke.h"
 
 namespace IDragnev::Functional
@@ -63,7 +62,7 @@ namespace IDragnev::Functional
 	{
 		return [f, funs...](const auto&... args) constexpr mutable -> decltype(auto)
 		{
-			return f(funs(args...)...);
+			return (invoke)(f, (invoke)(funs, args...)...);
 		};
 	}
 
