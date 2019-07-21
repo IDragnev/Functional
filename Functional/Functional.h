@@ -161,6 +161,59 @@ namespace IDragnev::Functional
 			return f(std::forward<Y>(y), std::forward<X>(x));
 		};
 	}
+
+	namespace Detail
+	{
+		template <typename... Args>
+		constexpr inline bool allOf(Args... args) noexcept
+		{
+			return (args && ...);
+		}
+
+		template <typename... Args>
+		constexpr inline bool anyOf(Args... args) noexcept
+		{
+			return (args || ...);
+		}
+		
+		enum class PredicateCombinationPolicy { and, or };
+
+		template <PredicateCombinationPolicy op,
+			      typename... Predicates
+		> constexpr auto 
+		combinePredicatesWith(Predicates... predicates) noexcept(areNothrowCopyConstructible<Predicates...>)
+		{
+			return [predicates...](const auto&... args) constexpr noexcept(allOf(std::is_nothrow_invocable_v<decltype(predicates), decltype(args)...>...))
+			{
+				using PCP = PredicateCombinationPolicy;
+
+				if constexpr (op == PCP::and)
+				{
+					return allOf(predicates(args...)...);
+				}
+				else
+				{
+					return anyOf(predicates(args...)...);
+				}
+			};
+		}
+	}
+
+	template <typename... Predicates>
+	constexpr inline
+	auto allOf(Predicates... predicates) noexcept(noexcept(Detail::combinePredicatesWith<Detail::PredicateCombinationPolicy::and>(predicates...)))
+	{
+		using PCP = Detail::PredicateCombinationPolicy;
+		return Detail::combinePredicatesWith<PCP::and>(predicates...);
+	}
+
+	template <typename... Predicates>
+	constexpr inline
+	auto anyOf(Predicates... predicates) noexcept(noexcept(Detail::combinePredicatesWith<Detail::PredicateCombinationPolicy::or>(predicates...)))
+	{
+		using PCP = Detail::PredicateCombinationPolicy;
+		return Detail::combinePredicatesWith<PCP::or>(predicates...);
+	}
 }
 
 #endif //__FUNCTIONAL_H_INCLUDED__

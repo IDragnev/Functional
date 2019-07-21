@@ -243,5 +243,33 @@ namespace FunctionalTest
 		{
 			static_assert(flip(LessThan{})(2, 1));
 		}
+
+		TEST_METHOD(combiningExistingPredicatesWithAnd)
+		{
+			auto isPositive = [](auto x) { return x > 0; };
+			auto isEven = [](auto x) { return x % 2 == 0; };
+
+			auto nums = std::vector<int>{ -1, -2, 0, 1, 2, 3, 4 };
+
+			auto pos = std::find_if(std::cbegin(nums),
+				                    std::cend(nums), 
+				                    allOf(isPositive, isEven));
+
+			Assert::IsTrue(pos == std::cbegin(nums) + 4);
+		}
+
+		TEST_METHOD(combiningExistingPredicatesWithOr)
+		{
+			auto isPositive = [](auto x) { return x > 0; };
+			auto isEven = [](auto x) { return x % 2 == 0; };
+
+			auto nums = std::vector<int>{ -1, -2, 0, 1, 2, 3, 4 };
+
+			auto pos = std::find_if(std::cbegin(nums),
+				                    std::cend(nums),
+				                    anyOf(isPositive, isEven));
+
+			Assert::IsTrue(pos == std::cbegin(nums) + 3);
+		}
 	};
 }
