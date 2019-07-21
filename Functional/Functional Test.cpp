@@ -20,6 +20,39 @@ namespace FunctionalTest
 	TEST_CLASS(FunctionalTest)
 	{
 	public:
+		TEST_METHOD(invokeOnMemberFunction)
+		{
+			struct X 
+			{
+				int f() const { return 1; }
+			} x;
+
+			Assert::AreEqual(invoke(&X::f, &x), 1);
+		}
+
+		TEST_METHOD(invokeOnMemberPointer)
+		{
+			struct X
+			{
+				int member = 10;
+			} x;
+
+			Assert::AreEqual(invoke(&X::member, &x), 10);
+		}
+
+		TEST_METHOD(invokeOnRegularFunction)
+		{
+			auto f = [](auto x) { return x + 1; };
+
+			Assert::AreEqual(invoke(f, 10), 11);
+		}
+
+		TEST_METHOD(invokeCanComputeAtCompileTime)
+		{
+			constexpr auto isPositive = [](auto x) constexpr { return x > 0; };
+
+			static_assert(invoke(isPositive, 10));
+		}
 		TEST_METHOD(lessThan)
 		{
 			Assert::IsTrue(LessThan{}(1, 2));

@@ -2,6 +2,7 @@
 #define __FUNCTIONAL_H_INCLUDED__
 
 #include <type_traits>
+#include "invoke.h"
 
 namespace IDragnev::Functional
 {	
