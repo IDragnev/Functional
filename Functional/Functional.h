@@ -49,8 +49,18 @@ namespace IDragnev::Functional
 
 	namespace Detail
 	{
+		constexpr auto andAll = [](auto... args) constexpr noexcept
+		{
+			return (args && ...);
+		};
+
+		constexpr auto orAll = [](auto... args) constexpr noexcept
+		{
+			return (args || ...);
+		};
+
 		template <typename... Ts>
-		inline constexpr bool areNothrowCopyConstructible = (std::is_nothrow_copy_constructible_v<Ts> && ...);
+		inline constexpr bool areNothrowCopyConstructible = andAll(std::is_nothrow_copy_constructible_v<Ts>...);
 	}
 
 	template <typename F>
@@ -62,15 +72,29 @@ namespace IDragnev::Functional
 	{
 		return [f, funs...](const auto&... args) constexpr mutable -> decltype(auto)
 		{
+			using Detail::andAll;
+			static_assert(andAll(std::is_invocable_v<decltype(funs), decltype(args)...>...),
+				          "Incompatible arguments supplied for Gs or their signatures are incompatible");
+			static_assert(std::is_invocable_v<decltype(f), std::invoke_result_t<decltype(funs), decltype(args)...>...>,
+				          "F and Gs have incompatible signatures");
+			
 			return (invoke)(f, (invoke)(funs, args...)...);
 		};
 	}
 
 	template <typename F, typename G>
-	constexpr inline 
-	auto compose(F f, G g) noexcept(noexcept(superpose(f, g)))
+	constexpr inline
+	auto compose(F f, G g) noexcept(Detail::areNothrowCopyConstructible<F, G>)
 	{
-		return superpose(f, g);
+		return [f, g](auto&&... args) constexpr mutable -> decltype(auto)
+		{
+			static_assert(std::is_invocable_v<decltype(g), decltype(args)...>, 
+				          "Incompatible arguments supplied for G");
+			static_assert(std::is_invocable_v<decltype(f), std::invoke_result_t<decltype(g), decltype(args)...>>,
+				          "F and G have incompatible signatures");
+
+			return (invoke)(f, (invoke)(g, std::forward<decltype(args)>(args)...));
+		};
 	}
 
 	template <typename F, typename G, typename... Gs>
@@ -163,17 +187,7 @@ namespace IDragnev::Functional
 	}
 
 	namespace Detail
-	{
-		constexpr auto andAll = [](auto... args) constexpr noexcept
-		{
-			return (args && ...);
-		};
-
-		constexpr auto orAll = [](auto... args) constexpr noexcept
-		{
-			return (args || ...);
-		};
-		
+	{		
 		template <typename CombinationOp, typename... Predicates> 
 		constexpr auto 
 		combinePredicatesWith(CombinationOp op, Predicates... predicates) noexcept(areNothrowCopyConstructible<Predicates...>)

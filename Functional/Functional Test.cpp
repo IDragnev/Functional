@@ -175,6 +175,14 @@ namespace FunctionalTest
 		}
 
 	public:
+		TEST_METHOD(theResultOfComposeUsesPerfectForwardingForTheArguments)
+		{
+			auto f = [](int&& x) -> int&& { return std::move(x); };
+
+			auto g = compose(plus(1), f);
+
+			Assert::AreEqual(g(1), 2);
+		}
 		TEST_METHOD(superpositionAndCompositionCanComputeAtCompileTime)
 		{
 			constexpr auto plusOne = [](auto x) constexpr { return x + 1; };
