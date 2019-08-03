@@ -182,7 +182,7 @@ namespace IDragnev::Functional
 		{
 			using X = decltype(x);
 			using Y = decltype(y);
-			return f(std::forward<Y>(y), std::forward<X>(x));
+			return (invoke)(f, std::forward<Y>(y), std::forward<X>(x));
 		};
 	}
 
