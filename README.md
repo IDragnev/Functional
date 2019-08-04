@@ -86,4 +86,28 @@ std::for_each(std::cbegin(items), std::cend(items), save);
 
   CHECK(reversedNums == List{ 5, 4, 3, 2, 1 });
   ```
+  ### matching items by specific criteria:
+  ```C++
+  class Person
+  {
+  public:
+  //...
+    unsigned id() const;
+    const std::string& name() const;
+  };
+  
+  std::vector<Person*> people;
+  //...
+  auto targetId = someFunction();
+  auto matchesTargetId = matches(targetId, &Person::id);
+  auto pos = std::find_if(std::cbegin(people),
+                          std::cend(people),
+                          matchesTargetId);
+  //...
+  auto targetName = otherFunction();
+  auto matchesTargetName = matches(std::move(targetName), &Person::name);
+  pos = std::find_if(std::cbegin(people),
+                     std::cend(people),
+                     matchesTargetName);
+  ```
 ### and more. Examples can be found in the [tests](https://github.com/IDragnev/Functional/blob/master/Functional/tests.cpp).
