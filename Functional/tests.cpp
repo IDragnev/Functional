@@ -169,7 +169,7 @@ TEST_CASE("testing inverse")
 
         auto it = std::find_if(std::begin(nums), 
                                std::end(nums), 
-			                   inverse(isPositive));
+                               inverse(isPositive));
 
 		CHECK(it == nums + 2);
 	}
