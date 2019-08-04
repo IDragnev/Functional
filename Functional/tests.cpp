@@ -139,7 +139,7 @@ TEST_CASE("testing plus")
 		auto strings = Strings{ "a", "b", "c" };
 		const auto expected = Strings{ "a!", "b!", "c!" };
 
-		std::transform(std::begin(strings),
+        std::transform(std::begin(strings),
                        std::end(strings),
                        std::begin(strings),
                        plus("!"));
@@ -167,7 +167,7 @@ TEST_CASE("testing inverse")
 	{
 		const int nums[] = { 1, 2, 0, -1, 2 };
 
-		auto it = std::find_if(std::begin(nums), 
+        auto it = std::find_if(std::begin(nums), 
                                std::end(nums), 
 			                   inverse(isPositive));
 
@@ -347,7 +347,7 @@ TEST_CASE("testing flip")
 		};
 		auto nums = { 1, 2, 3, 4, 5 };
 
-		auto reversedNums = std::accumulate(std::cbegin(nums),
+        auto reversedNums = std::accumulate(std::cbegin(nums),
                                             std::cend(nums),
                                             List{},
                                             flip(insertBack));
@@ -371,7 +371,7 @@ TEST_CASE("testing allOf and anyOf")
 	SUBCASE("allOf basics")
 	{
 
-		auto pos = std::find_if(std::cbegin(nums),
+        auto pos = std::find_if(std::cbegin(nums),
                                 std::cend(nums),
                                 allOf(isPositive, isEven));
 
@@ -380,7 +380,7 @@ TEST_CASE("testing allOf and anyOf")
 
 	SUBCASE("anyOf basics")
 	{
-		auto pos = std::find_if(std::cbegin(nums),
+        auto pos = std::find_if(std::cbegin(nums),
                                 std::cend(nums),
                                 anyOf(isPositive, isEven));
 
