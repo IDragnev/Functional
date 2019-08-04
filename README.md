@@ -1,6 +1,8 @@
 # Functional
-## Useful higher-order functions and function objects for easier functional programming in C++  
-  ### constexpr version of [std::invoke](https://en.cppreference.com/w/cpp/utility/functional/invoke)   
+## Useful higher-order functions and function objects for easier functional programming in C++, most of which can be used at compile time.   
+
+## You can:       
+  ### use a constexpr version of [std::invoke](https://en.cppreference.com/w/cpp/utility/functional/invoke)   
   ### [curry](https://en.wikipedia.org/wiki/Currying) any function: 
    ```C++
     auto sum = [](auto x, auto y, auto z) { return x + y + z; };  
@@ -37,7 +39,7 @@ std::vector<Item*> items;
 //...
 std::for_each(std::cbegin(items), std::cend(items), save);
 ```
-  ### combine existing predicates:  
+  ### combine any number of existing predicates:  
 ```C++
  auto isPositive = [](auto x) { return x > 0; };
  auto isEven = [](auto x) { return x % 2 == 0; };
@@ -86,7 +88,7 @@ std::for_each(std::cbegin(items), std::cend(items), save);
 
   CHECK(reversedNums == List{ 5, 4, 3, 2, 1 });
   ```
-  ### matching items by specific criteria:
+  ### match items by specific criteria:
   ```C++
   class Person
   {
