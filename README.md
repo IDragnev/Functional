@@ -86,4 +86,4 @@ std::for_each(std::cbegin(items), std::cend(items), save);
 
   CHECK(reversedNums == List{ 5, 4, 3, 2, 1 });
   ```
-### and more. Examples can be found in the tests.
+### and more. Examples can be found in the [tests](https://github.com/IDragnev/Functional/blob/master/Functional/tests.cpp).
