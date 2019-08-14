@@ -347,3 +347,10 @@ TEST_CASE("testing allOf and anyOf")
 		static_assert(anyOf(isPositive, isEven)(-2));
 	}
 }
+
+TEST_CASE("testing bindFirst")
+{
+    auto f = bindFirst(std::plus{}, 1);
+
+    CHECK(f(2) == 3);
+}
