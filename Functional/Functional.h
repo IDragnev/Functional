@@ -147,17 +147,16 @@ namespace IDragnev::Functional
 		return Detail::curryImpl(f, {});
 	}
 
-	template <typename BinaryFunction>
-	constexpr auto flip(BinaryFunction f) noexcept
+	inline constexpr auto flip = [](auto f) noexcept
 	{
-		return[f](auto&& x, auto&& y) constexpr noexcept(std::is_invocable_v<decltype(f), decltype(y), decltype(x)>)
+		return [f](auto&& x, auto&& y) constexpr noexcept(std::is_invocable_v<decltype(f), decltype(y), decltype(x)>)
 		-> decltype(auto)
 		{
 			using X = decltype(x);
 			using Y = decltype(y);
 			return (invoke)(f, std::forward<Y>(y), std::forward<X>(x));
 		};
-	}
+    };
 
 	namespace Detail
 	{		
@@ -177,6 +176,28 @@ namespace IDragnev::Functional
 
     constexpr auto allOf = Detail::makePredicateCombinator(Detail::andAll);
     constexpr auto anyOf = Detail::makePredicateCombinator(Detail::orAll);
+
+    /*const auto bindFirst = [](auto f, auto arg) noexcept(std::is_nothrow_copy_constructible_v<decltype(f)> &&
+                                                         std::is_nothrow_move_constructible_v<decltype(arg)>)
+    {
+        return [f, first = std::move(arg)](auto&&... rest)
+        {
+            return (invoke)(f, first, std::forward<decltype(rest)>(rest)...);
+        };
+    };
+
+    namespace Detail
+    {
+        const auto makeBinaryFunctionRightArgumentBinder = compose(bindFirst, flip);
+    }
+
+    auto plus = makeBinaryFunctionRightArgumentBinder(std::plus{});
+    auto minus = makeBinaryFunctionRightArgumentBinder(std::minus{});
+    auto multiplyBy = makeBinaryFunctionRightArgumentBinder(std::multiplies{});
+    auto mod = makeBinaryFunctionRightArgumentBinder(std::modulo{});
+    auto lessThan = makeBinaryFunctionRightArgumentBinder(std::less_than{});
+    auto greaterThan = makeBinaryFunctionRightArgumentBinder(std::greater_than{});*/
+
 }
 
 #endif //__FUNCTIONAL_H_INCLUDED__
