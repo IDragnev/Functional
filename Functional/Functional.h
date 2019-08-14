@@ -5,33 +5,6 @@
 
 namespace IDragnev::Functional
 {	
-	struct LessThan
-	{
-		template <typename T, typename U>
-		constexpr auto operator()(const T& lhs, const U& rhs) const noexcept(noexcept(lhs < rhs))
-		{
-			return lhs < rhs;
-		}
-	};
-
-	struct GreaterThan
-	{
-		template <typename T, typename U>
-		constexpr auto operator()(const T& lhs, const U& rhs) const noexcept(noexcept(lhs > rhs))
-		{
-			return lhs > rhs;
-		}
-	};
-
-	struct EqualTo
-	{
-		template <typename T, typename U>
-		constexpr auto operator()(const T& lhs, const U& rhs) const noexcept(noexcept(lhs == rhs))
-		{
-			return lhs == rhs;
-		}
-	};
-
 	struct Identity
 	{
 		template <typename T>

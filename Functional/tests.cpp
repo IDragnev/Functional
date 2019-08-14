@@ -57,56 +57,6 @@ TEST_CASE("testing invoke")
 	}
 }
 
-TEST_CASE("testing LessThan")
-{
-	constexpr auto lessThan = LessThan{};
-
-	SUBCASE("basics")
-	{
-		CHECK(lessThan(1, 2));
-		CHECK(!lessThan(1, 1));
-		CHECK(!lessThan(2, 1));
-	}
-
-	SUBCASE("computing at compile time")
-	{
-		static_assert(lessThan(1, 2));
-	}
-}
-
-TEST_CASE("testing GreaterThan")
-{
-	constexpr auto greaterThan = GreaterThan{};
-
-	SUBCASE("basics")
-	{
-		CHECK(greaterThan(2, 1));
-		CHECK(!greaterThan(1, 1));
-		CHECK(!greaterThan(1, 2));
-	}
-
-	SUBCASE("computing at compile time")
-	{
-		static_assert(greaterThan(2, 1));
-	}
-}
-
-TEST_CASE("testing EqualTo")
-{
-	constexpr auto equalTo = EqualTo{};
-
-	SUBCASE("basics")
-	{
-		CHECK(EqualTo{}(1, 1));
-		CHECK(!EqualTo{}(1, 2));
-	}
-
-	SUBCASE("computing at compile time")
-	{
-		static_assert(equalTo(1, 1));
-	}
-}
-
 TEST_CASE("testing Identity")
 {
 	auto id = Identity{};
@@ -357,7 +307,7 @@ TEST_CASE("testing flip")
 
 	SUBCASE("computing at compile time")
 	{
-		static_assert(flip(LessThan{})(2, 1));
+		static_assert(flip(std::less{})(2, 1));
 	}
 }
 
