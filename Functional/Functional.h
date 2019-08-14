@@ -76,31 +76,6 @@ namespace IDragnev::Functional
 		return compose(compose(f, g), funs...);
 	}
 
-	template <typename T>
-	inline auto equalTo(T key) noexcept(std::is_nothrow_move_constructible_v<T>)
-	{
-		return [lhs = std::move(key)](const auto& rhs)
-		{ 
-			return lhs == rhs;
-		};
-	}
-
-	template <typename Key, typename KeyExtractor>
-	inline auto matches(Key key, KeyExtractor extractKey) 
-	{
-		return compose(equalTo(std::move(key)), std::move(extractKey));
-	}
-
-	template <typename T>
-	inline auto plus(T rhs) noexcept(std::is_nothrow_move_constructible_v<T>)
-	{
-		return[rhs = std::move(rhs)](auto&& lhs) -> decltype(auto)
-		{
-			using F = decltype(lhs);
-			return std::forward<F>(lhs) + rhs;
-		};
-	}
-
 	template <typename Predicate>
 	constexpr inline 
 	auto inverse(Predicate p) noexcept(std::is_nothrow_copy_constructible_v<Predicate>)
@@ -177,27 +152,35 @@ namespace IDragnev::Functional
     constexpr auto allOf = Detail::makePredicateCombinator(Detail::andAll);
     constexpr auto anyOf = Detail::makePredicateCombinator(Detail::orAll);
 
-    /*const auto bindFirst = [](auto f, auto arg) noexcept(std::is_nothrow_copy_constructible_v<decltype(f)> &&
+    const auto bindFirst = [](auto f, auto arg) noexcept(std::is_nothrow_copy_constructible_v<decltype(f)> &&
                                                          std::is_nothrow_move_constructible_v<decltype(arg)>)
     {
         return [f, first = std::move(arg)](auto&&... rest)
         {
+            static_assert(std::is_invocable_v<decltype(f), decltype(first), decltype(rest)...>, 
+                          "Incompatible arguments supplied");
             return (invoke)(f, first, std::forward<decltype(rest)>(rest)...);
         };
     };
 
     namespace Detail
     {
-        const auto makeBinaryFunctionRightArgumentBinder = compose(bindFirst, flip);
+        auto makeBinaryFunctionRightArgumentBinder = compose(curry(bindFirst), flip);
     }
 
-    auto plus = makeBinaryFunctionRightArgumentBinder(std::plus{});
-    auto minus = makeBinaryFunctionRightArgumentBinder(std::minus{});
-    auto multiplyBy = makeBinaryFunctionRightArgumentBinder(std::multiplies{});
-    auto mod = makeBinaryFunctionRightArgumentBinder(std::modulo{});
-    auto lessThan = makeBinaryFunctionRightArgumentBinder(std::less_than{});
-    auto greaterThan = makeBinaryFunctionRightArgumentBinder(std::greater_than{});*/
+    auto equals = Detail::makeBinaryFunctionRightArgumentBinder(std::equal_to{});
+    auto plus = Detail::makeBinaryFunctionRightArgumentBinder(std::plus{});
+    auto minus = Detail::makeBinaryFunctionRightArgumentBinder(std::minus{});
+    auto multiplyBy = Detail::makeBinaryFunctionRightArgumentBinder(std::multiplies{});
+    auto lessThan = Detail::makeBinaryFunctionRightArgumentBinder(std::less{});
+    auto mod = Detail::makeBinaryFunctionRightArgumentBinder(std::modulus{});
+    auto greaterThan = Detail::makeBinaryFunctionRightArgumentBinder(std::greater{});
 
+    template <typename Key, typename KeyExtractor>
+    inline auto matches(Key key, KeyExtractor extractKey)
+    {
+        return compose(equals(std::move(key)), std::move(extractKey));
+    }
 }
 
 #endif //__FUNCTIONAL_H_INCLUDED__

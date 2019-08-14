@@ -201,15 +201,15 @@ TEST_CASE("testing composition")
 	}
 }
 
-TEST_CASE("testing equalTo")
+TEST_CASE("testing equals")
 {
 	SUBCASE("basics")
 	{
-		CHECK(equalTo("123"s)("123"s));
-		CHECK(!equalTo("lhs"s)("rhs"s));
+		CHECK(equals("123"s)("123"s));
+		CHECK(!equals("lhs"s)("rhs"s));
 	}
 
-	SUBCASE("equalTo allows implicit type conversions")
+	SUBCASE("equals allows implicit type conversions")
 	{
 		struct X
 		{
@@ -217,7 +217,7 @@ TEST_CASE("testing equalTo")
 			operator int() const { return x; }
 		} x;
 
-		CHECK(equalTo(1)(x));
+		CHECK(equals(1)(x));
 	}
 }
 
