@@ -161,36 +161,22 @@ namespace IDragnev::Functional
 
 	namespace Detail
 	{		
-		template <typename CombinationOp, typename... Predicates> 
-		constexpr auto 
-		combinePredicatesWith(CombinationOp op, Predicates... predicates) noexcept(areNothrowCopyConstructible<Predicates...>)
-		{
-			return [op, predicates...](const auto&... args) constexpr noexcept(andAll(std::is_nothrow_invocable_v<decltype(predicates), decltype(args)...>...))
-			{
-				return op(predicates(args...)...);
-			};
-		}
+        template <typename CombinationOp>
+        constexpr auto
+        makePredicateCombinator(CombinationOp op) noexcept(std::is_nothrow_copy_constructible_v<CombinationOp>)
+        {
+            return [op](auto... predicates) constexpr noexcept(areNothrowCopyConstructible<decltype(op), decltype(predicates)...>)
+            {
+                return [op, predicates...](const auto&... args) constexpr noexcept(andAll(std::is_nothrow_invocable_v<decltype(predicates), decltype(args)...>...))
+                {
+                    return op(predicates(args...)...);
+                };
+            };
+        }
 	}
 
-	template <typename... Predicates>
-	constexpr inline
-	auto allOf(Predicates... predicates) noexcept(noexcept(Detail::combinePredicatesWith(Detail::andAll, predicates...)))
-	{
-		using Detail::andAll;
-		using Detail::combinePredicatesWith;
-
-		return combinePredicatesWith(andAll, predicates...);
-	}
-
-	template <typename... Predicates>
-	constexpr inline
-	auto anyOf(Predicates... predicates) noexcept(noexcept(Detail::combinePredicatesWith(Detail::orAll, predicates...)))
-	{
-		using Detail::orAll;
-		using Detail::combinePredicatesWith;
-
-		return combinePredicatesWith(orAll, predicates...);
-	}
+    constexpr auto allOf = Detail::makePredicateCombinator(Detail::andAll);
+    constexpr auto anyOf = Detail::makePredicateCombinator(Detail::orAll);
 }
 
 #endif //__FUNCTIONAL_H_INCLUDED__
