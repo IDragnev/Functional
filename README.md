@@ -5,13 +5,26 @@
   ### use a constexpr version of [std::invoke](https://en.cppreference.com/w/cpp/utility/functional/invoke)   
   ### [curry](https://en.wikipedia.org/wiki/Currying) any function: 
    ```C++
-    auto sum = [](auto x, auto y, auto z) { return x + y + z; };  
-    auto curriedSum = curry(sum);  
+    //some existing function with many arguments which
+    //we might regularly call with the same file/format or both
+    void printTo(File& file, Format f, Item item);
+   
+    //so we can curry it and avoid making numerous specific overloads:
+    const auto curriedPrintTo = curry(printTo);
     
-    CHECK(curriedSum(1, 2, 3) == 6);
-    CHECK(curriedSum(1, 2)(3) == 6);
-    CHECK(curriedSum(1)(2, 3) == 6);
-    CHECK(curriedSum(1)(2)(3) == 6);
+    const auto log = curriedPrintTo(std::ref(debugFile));
+    //...
+    log(FileFormat::regular, someItem);
+   
+    //and then we notice that even log is
+    //mostly used with a regular format
+    const auto regularLog = log(Format::regular); //equivalent to curriedPrintTo(std::ref(debugFile), Format::regular);
+    
+    //now we can do it either way:
+    regularLog(someItem); 
+    log(FileFormat::regular, someItem);
+    log(FileFormat::compact, someItem);
+    curriedPrintTo(std::ref(debugFile), FileFormat::regular, someItem);    
    ```
   ### compose any number of functions:  
   ```C++
