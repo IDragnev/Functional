@@ -43,11 +43,11 @@ namespace IDragnev::Functional
 	constexpr inline 
 	auto superpose(F f, Gs... funs) noexcept(Detail::areNothrowCopyConstructible<F, Gs...>)
 	{
-		return [f, funs...](const auto&... args) constexpr mutable -> decltype(auto)
+		return [f, funs...](const auto&... args) constexpr -> decltype(auto)
 		{
 			using Detail::andAll;
 			static_assert(andAll(std::is_invocable_v<decltype(funs), decltype(args)...>...),
-				          "Incompatible arguments supplied for Gs or their signatures are incompatible");
+				          "Incompatible arguments given to Gs or their signatures are incompatible");
 			static_assert(std::is_invocable_v<decltype(f), std::invoke_result_t<decltype(funs), decltype(args)...>...>,
 				          "F and Gs have incompatible signatures");
 			
@@ -59,10 +59,10 @@ namespace IDragnev::Functional
 	constexpr inline
 	auto compose(F f, G g) noexcept(Detail::areNothrowCopyConstructible<F, G>)
 	{
-		return [f, g](auto&&... args) constexpr mutable -> decltype(auto)
+		return [f, g](auto&&... args) constexpr -> decltype(auto)
 		{
 			static_assert(std::is_invocable_v<decltype(g), decltype(args)...>, 
-				          "Incompatible arguments supplied for G");
+				          "Incompatible arguments given to G");
 			static_assert(std::is_invocable_v<decltype(f), std::invoke_result_t<decltype(g), decltype(args)...>>,
 				          "F and G have incompatible signatures");
 
@@ -165,7 +165,7 @@ namespace IDragnev::Functional
 
     namespace Detail
     {
-        auto makeBinaryFunctionRightArgumentBinder = compose(curry(bindFirst), flip);
+        const auto makeBinaryFunctionRightArgumentBinder = compose(curry(bindFirst), flip);
     }
 
     auto equals = Detail::makeBinaryFunctionRightArgumentBinder(std::equal_to{});
