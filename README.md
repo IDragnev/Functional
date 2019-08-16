@@ -116,12 +116,20 @@ std::for_each(std::cbegin(items), std::cend(items), save);
   ### write more expressive code:
   Instead of
   ```C++
-  std::find_if(std::cbegin(nums), std::cend(nums), [](auto x) { return x == 0; });
+  std::find_if(std::cbegin(nums), std::cend(nums), [](auto x) { return x < 0; });
+  std::transform(std::cbegin(nums), 
+                 std::cend(nums), 
+                 std::begin(result),
+                 [](auto x) { return x * 5; });
   ```
   you can simply write
   ```C++ 
-  std::find_if(std::cbegin(nums), std::cend(nums), equals(0));
+  std::find_if(std::cbegin(nums), std::cend(nums), lessThan(0));
+  std::transform(std::cbegin(nums), 
+                 std::cend(nums), 
+                 std::begin(result),
+                 times(5));
   ```
-  There are also the corresponding functions for -, +, *, %, <, >.
-  The bound argument is on the right as in Haskell's (+5), (*5) etc.
+  There are also the corresponding functions for -, +, %, /, ==, >, >=, <=, !=.
+  They all use perfect forwarding and the bound argument is on the right as in Haskell's (==0), (*5) etc.
 ### and more. Examples can be found in the [tests](https://github.com/IDragnev/Functional/blob/master/Functional/tests.cpp).
