@@ -168,14 +168,19 @@ namespace IDragnev::Functional
         const auto makeBinaryFunctionRightArgumentBinder = compose(curry(bindFirst), flip);
     }
 
-    auto equals = Detail::makeBinaryFunctionRightArgumentBinder(std::equal_to{});
-    auto plus = Detail::makeBinaryFunctionRightArgumentBinder(std::plus{});
-    auto minus = Detail::makeBinaryFunctionRightArgumentBinder(std::minus{});
-    auto multiplyBy = Detail::makeBinaryFunctionRightArgumentBinder(std::multiplies{});
-    auto lessThan = Detail::makeBinaryFunctionRightArgumentBinder(std::less{});
-    auto mod = Detail::makeBinaryFunctionRightArgumentBinder(std::modulus{});
-    auto greaterThan = Detail::makeBinaryFunctionRightArgumentBinder(std::greater{});
-
+    const auto plus = Detail::makeBinaryFunctionRightArgumentBinder(std::plus{});
+    const auto minus = Detail::makeBinaryFunctionRightArgumentBinder(std::minus{});
+    const auto times = Detail::makeBinaryFunctionRightArgumentBinder(std::multiplies{});
+    const auto divided = Detail::makeBinaryFunctionRightArgumentBinder(std::divides{});
+    const auto mod = Detail::makeBinaryFunctionRightArgumentBinder(std::modulus{});
+   
+    const auto equals = Detail::makeBinaryFunctionRightArgumentBinder(std::equal_to{});
+    const auto differs = Detail::makeBinaryFunctionRightArgumentBinder(std::not_equal_to{});
+    const auto lessThan = Detail::makeBinaryFunctionRightArgumentBinder(std::less{});
+    const auto greaterThan = Detail::makeBinaryFunctionRightArgumentBinder(std::greater{});
+    const auto greaterOrEqualTo = Detail::makeBinaryFunctionRightArgumentBinder(std::greater_equal{});
+    const auto lessOrEqualTo = Detail::makeBinaryFunctionRightArgumentBinder(std::less_equal{});
+    
     template <typename Key, typename KeyExtractor>
     inline auto matches(Key key, KeyExtractor extractKey)
     {

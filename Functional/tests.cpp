@@ -109,6 +109,37 @@ TEST_CASE("testing plus")
 	}
 }
 
+TEST_CASE("testing minus")
+{
+    SUBCASE("minus takes its left operand as an argument")
+    { 
+        const auto nums = { 1, 2, 3 };
+        const auto expected = std::vector<int>{ 0, 1, 2 };
+        auto result = std::vector<int>(nums.size(), 0);
+        
+        std::transform(std::begin(nums),
+                       std::end(nums),
+                       std::begin(result),
+                       minus(1));
+
+        CHECK(result == expected);
+    }
+
+    SUBCASE("minus uses perfect forwarding")
+    {
+        struct X
+        {
+            int operator-(int) && { return 1; }
+        };
+ 
+        const auto f = minus(1);
+
+        auto result = f(X{});
+
+        CHECK(result == 1);
+    }
+}
+
 TEST_CASE("testing inverse")
 {
 	constexpr auto isPositive = [](auto x) constexpr { return x > 0; };
@@ -219,6 +250,26 @@ TEST_CASE("testing equals")
 
 		CHECK(equals(1)(x));
 	}
+}
+
+TEST_CASE("testing differs")
+{
+    SUBCASE("basics")
+    {
+        CHECK(differs("123"s)("122"s));
+        CHECK(!differs("abc"s)("abc"s));
+    }
+
+    SUBCASE("differs allows implicit type conversions")
+    {
+        struct X
+        {
+            int x = 1;
+            operator int() const { return x; }
+        } x;
+
+        CHECK(differs(2)(x));
+    }
 }
 
 TEST_CASE("testing matches")
