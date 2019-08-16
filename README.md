@@ -112,4 +112,16 @@ std::for_each(std::cbegin(items), std::cend(items), save);
                      std::cend(people),
                      matchesTargetName);
   ```
+  
+  ### write more expressive code:
+  Instead of
+  ```C++
+  std::find_if(std::cbegin(nums), std::cend(nums), [](auto x) { return x == 0; });
+  ```
+  you can simply write
+  ```C++ 
+  std::find_if(std::cbegin(nums), std::cend(nums), equals(0));
+  ```
+  There are also the corresponding functions for -, +, *, %, <, >.
+  The bound argument is on the right as in Haskell's (+5), (*5) etc.
 ### and more. Examples can be found in the [tests](https://github.com/IDragnev/Functional/blob/master/Functional/tests.cpp).
