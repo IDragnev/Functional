@@ -306,10 +306,30 @@ TEST_CASE("testing curry")
 		auto f = [](int&& x, std::string&& y) { return x; };
 		const auto x = 1;
 
-		auto curriedF = curry(f);
+		const auto curriedF = curry(f);
 
 		CHECK(curriedF(x)("y"s) == x);
 	}
+
+    SUBCASE("multiple invocations")
+    {
+        using Strings = std::vector<std::string>;
+
+        const auto f = [](std::string&& str, std::uint32_t n)
+        {
+            return str + std::to_string(n);
+        };   
+        const auto format = curry(f)("~");
+        const auto nums = { 1, 2, 3 };
+        auto result = Strings(nums.size());
+
+        std::transform(std::cbegin(nums),
+                       std::cend(nums),
+                       std::begin(result),
+                       format);
+
+        CHECK(result == Strings{ "~1", "~2", "~3" });
+    }
 
 	SUBCASE("passing non-copiable types by reference to the curried function")
 	{

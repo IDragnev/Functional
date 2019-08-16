@@ -100,9 +100,9 @@ namespace IDragnev::Functional
 			return [f, boundArgs = std::move(t)](auto&&... rest) -> decltype(auto)
 			{
 				auto newArgs = std::make_tuple(std::forward<decltype(rest)>(rest)...);
-				auto args = std::tuple_cat(std::move(boundArgs), std::move(newArgs));
+				auto args = std::tuple_cat(boundArgs, std::move(newArgs));
 
-				using ArgsTuple = decltype(std::tuple_cat(std::move(boundArgs), std::move(newArgs)));
+				using ArgsTuple = decltype(std::tuple_cat(boundArgs, newArgs));
 				
 				if constexpr (isInvocableWithPackedArgs<Callable, ArgsTuple>)
 				{
