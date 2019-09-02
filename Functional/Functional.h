@@ -2,24 +2,25 @@
 #define __FUNCTIONAL_H_INCLUDED__
 
 #include "invoke.h"
+#include <utility>
 
 namespace IDragnev::Functional
 {	
-    constexpr auto identity = [](auto&& x) constexpr noexcept -> decltype(auto)
+    inline constexpr auto identity = [](auto&& x) constexpr noexcept -> decltype(auto)
     {
         return std::forward<decltype(x)>(x);
     };
 
-    constexpr auto emptyFunction = [](auto&&...) constexpr noexcept { };
+    inline constexpr auto emptyFunction = [](auto&&...) constexpr noexcept { };
 
 	namespace Detail
 	{
-		constexpr auto andAll = [](auto... args) constexpr noexcept
+		inline constexpr auto andAll = [](auto... args) constexpr noexcept
 		{
 			return (args && ...);
 		};
 
-		constexpr auto orAll = [](auto... args) constexpr noexcept
+		inline constexpr auto orAll = [](auto... args) constexpr noexcept
 		{
 			return (args || ...);
 		};
@@ -127,25 +128,20 @@ namespace IDragnev::Functional
 
 	namespace Detail
 	{		
-        template <typename CombinationOp>
-        constexpr auto
-        makePredicateCombinator(CombinationOp op) noexcept(std::is_nothrow_copy_constructible_v<CombinationOp>)
+        inline constexpr auto makePredicateCombinator = [](auto op) noexcept(std::is_nothrow_copy_constructible_v<decltype(op)>)
         {
             return [op](auto... predicates) constexpr noexcept(areNothrowCopyConstructible<decltype(op), decltype(predicates)...>)
             {
-                return [op, predicates...](const auto&... args) constexpr noexcept(andAll(std::is_nothrow_invocable_v<decltype(predicates), decltype(args)...>...))
-                {
-                    return op(predicates(args...)...);
-                };
+                return superpose(op, predicates...);
             };
-        }
+        };
 	}
 
-    constexpr auto allOf = Detail::makePredicateCombinator(Detail::andAll);
-    constexpr auto anyOf = Detail::makePredicateCombinator(Detail::orAll);
+    inline constexpr auto allOf = Detail::makePredicateCombinator(Detail::andAll);
+    inline constexpr auto anyOf = Detail::makePredicateCombinator(Detail::orAll);
 
-    const auto bindFirst = [](auto f, auto arg) noexcept(std::is_nothrow_copy_constructible_v<decltype(f)> &&
-                                                         std::is_nothrow_move_constructible_v<decltype(arg)>)
+    inline const auto bindFirst = [](auto f, auto arg) noexcept(std::is_nothrow_copy_constructible_v<decltype(f)> &&
+                                                                std::is_nothrow_move_constructible_v<decltype(arg)>)
     {
         return [f, first = std::move(arg)](auto&&... rest)
         {
@@ -157,23 +153,23 @@ namespace IDragnev::Functional
 
     namespace Detail
     {
-        const auto makeBinaryFunctionRightArgumentBinder = compose(curry(bindFirst), flip);
+        inline const auto makeBinaryFunctionRightArgumentBinder = compose(curry(bindFirst), flip);
     }
 
-    const auto plus = Detail::makeBinaryFunctionRightArgumentBinder(std::plus{});
-    const auto minus = Detail::makeBinaryFunctionRightArgumentBinder(std::minus{});
-    const auto times = Detail::makeBinaryFunctionRightArgumentBinder(std::multiplies{});
-    const auto divided = Detail::makeBinaryFunctionRightArgumentBinder(std::divides{});
-    const auto mod = Detail::makeBinaryFunctionRightArgumentBinder(std::modulus{});
+    inline const auto plus = Detail::makeBinaryFunctionRightArgumentBinder(std::plus{});
+    inline const auto minus = Detail::makeBinaryFunctionRightArgumentBinder(std::minus{});
+    inline const auto times = Detail::makeBinaryFunctionRightArgumentBinder(std::multiplies{});
+    inline const auto divided = Detail::makeBinaryFunctionRightArgumentBinder(std::divides{});
+    inline const auto mod = Detail::makeBinaryFunctionRightArgumentBinder(std::modulus{});
    
-    const auto equals = Detail::makeBinaryFunctionRightArgumentBinder(std::equal_to{});
-    const auto differs = Detail::makeBinaryFunctionRightArgumentBinder(std::not_equal_to{});
-    const auto lessThan = Detail::makeBinaryFunctionRightArgumentBinder(std::less{});
-    const auto greaterThan = Detail::makeBinaryFunctionRightArgumentBinder(std::greater{});
-    const auto greaterOrEqualTo = Detail::makeBinaryFunctionRightArgumentBinder(std::greater_equal{});
-    const auto lessOrEqualTo = Detail::makeBinaryFunctionRightArgumentBinder(std::less_equal{});
+    inline const auto equals = Detail::makeBinaryFunctionRightArgumentBinder(std::equal_to{});
+    inline const auto differs = Detail::makeBinaryFunctionRightArgumentBinder(std::not_equal_to{});
+    inline const auto lessThan = Detail::makeBinaryFunctionRightArgumentBinder(std::less{});
+    inline const auto greaterThan = Detail::makeBinaryFunctionRightArgumentBinder(std::greater{});
+    inline const auto greaterOrEqualTo = Detail::makeBinaryFunctionRightArgumentBinder(std::greater_equal{});
+    inline const auto lessOrEqualTo = Detail::makeBinaryFunctionRightArgumentBinder(std::less_equal{});
     
-    const auto matches = [](auto key, auto keyExtractor)
+    inline const auto matches = [](auto key, auto keyExtractor)
     {
         return compose(equals(std::move(key)), keyExtractor);
     };
