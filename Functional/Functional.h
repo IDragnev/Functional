@@ -5,20 +5,12 @@
 
 namespace IDragnev::Functional
 {	
-	struct Identity
-	{
-		template <typename T>
-		constexpr decltype(auto) operator()(T&& item) const noexcept
-		{
-			return std::forward<T>(item);
-		}
-	};
+    constexpr auto identity = [](auto&& x) constexpr noexcept -> decltype(auto)
+    {
+        return std::forward<decltype(x)>(x);
+    };
 
-	struct EmptyFunction
-	{
-		template <typename... Args>
-		constexpr void operator()(Args&&...) const noexcept { }
-	};
+    constexpr auto emptyFunction = [](auto&&...) constexpr noexcept { };
 
 	namespace Detail
 	{
@@ -181,11 +173,10 @@ namespace IDragnev::Functional
     const auto greaterOrEqualTo = Detail::makeBinaryFunctionRightArgumentBinder(std::greater_equal{});
     const auto lessOrEqualTo = Detail::makeBinaryFunctionRightArgumentBinder(std::less_equal{});
     
-    template <typename Key, typename KeyExtractor>
-    inline auto matches(Key key, KeyExtractor extractKey)
+    const auto matches = [](auto key, auto keyExtractor)
     {
-        return compose(equals(std::move(key)), std::move(extractKey));
-    }
+        return compose(equals(std::move(key)), keyExtractor);
+    };
 }
 
 #endif //__FUNCTIONAL_H_INCLUDED__

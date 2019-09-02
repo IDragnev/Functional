@@ -57,27 +57,25 @@ TEST_CASE("invoke")
 	}
 }
 
-TEST_CASE("Identity")
+TEST_CASE("identity")
 {
-	auto id = Identity{};
-
 	SUBCASE("basics")
 	{
-		CHECK(id(1) == 1);
-		CHECK(id(1) != 2);
+		CHECK(identity(1) == 1);
+		CHECK(identity(1) != 2);
 	}
 
 	SUBCASE("identity uses perfect forwarding")
 	{
 		std::string str = "s";
-		std::string&& ref = id(std::move(str));
+		std::string&& ref = identity(std::move(str));
 
 		CHECK(ref == str);
 	}
 
 	SUBCASE("computing at compile time")
 	{
-		static_assert(id(1) == 1);
+		static_assert(identity(1) == 1);
 	}
 }
 
@@ -174,11 +172,10 @@ TEST_CASE("superposition")
 
 	SUBCASE("superposition handles reference return types")
 	{
-		const auto id = Identity{};
 		const auto max = [](const auto& x, const auto& y) -> const auto& { return x >= y ? x : y; };
 		const auto x = 1;
 
-		auto g = superpose(max, id, id);
+		auto g = superpose(max, identity, identity);
 
 		const auto& result = g(x);
 
@@ -187,28 +184,25 @@ TEST_CASE("superposition")
 
 	SUBCASE("computing at compile time")
 	{
-		constexpr auto id = Identity{};
-		static_assert(superpose(std::minus{}, id, id)(1) == 0);
+		static_assert(superpose(std::minus{}, identity, identity)(1) == 0);
 	}
 }
 
 TEST_CASE("composition")
 {
-	auto id = Identity{};
-	
 	SUBCASE("basics")
 	{
 		auto toString = [](auto num) { return std::to_string(num); };
 
-		// f = plus789 * plus456 * toString * id
-		auto f = compose(plus("789"s), plus("456"s), toString, id);
+		// f = plus789 * plus456 * toString * identity
+		auto f = compose(plus("789"s), plus("456"s), toString, identity);
 
 		CHECK(f(123) == "123456789"s);
 	}
 
 	SUBCASE("composition handles reference return types")
 	{
-		auto f = compose(id, id, id);
+		auto f = compose(identity, identity, identity);
 		auto x = 10;
 
 		int&& y = f(std::move(x));
