@@ -361,7 +361,7 @@ TEST_CASE("testing flip")
 		using List = std::forward_list<int>;
 
 		//some existing function we can reuse
-		auto insertBack = [](auto x, auto&& container) -> decltype(auto)
+		auto insertFront = [](auto x, auto&& container) -> decltype(auto)
 		{
 			container.push_front(x);
 			return std::move(container);
@@ -371,7 +371,7 @@ TEST_CASE("testing flip")
         auto reversedNums = std::accumulate(std::cbegin(nums),
                                             std::cend(nums),
                                             List{},
-                                            flip(insertBack));
+                                            flip(insertFront));
 
 		CHECK(reversedNums == List{ 5, 4, 3, 2, 1 });
 	}
