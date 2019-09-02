@@ -12,7 +12,7 @@
 using namespace std::string_literals;
 using namespace IDragnev::Functional;
 
-TEST_CASE("testing invoke")
+TEST_CASE("invoke")
 {
 	SUBCASE("with member function")
 	{
@@ -57,7 +57,7 @@ TEST_CASE("testing invoke")
 	}
 }
 
-TEST_CASE("testing Identity")
+TEST_CASE("Identity")
 {
 	auto id = Identity{};
 
@@ -81,7 +81,7 @@ TEST_CASE("testing Identity")
 	}
 }
 
-TEST_CASE("testing plus")
+TEST_CASE("plus")
 {
 	SUBCASE("plus takes its left operand as an argument")
 	{
@@ -109,7 +109,7 @@ TEST_CASE("testing plus")
 	}
 }
 
-TEST_CASE("testing minus")
+TEST_CASE("minus")
 {
     SUBCASE("minus takes its left operand as an argument")
     { 
@@ -140,7 +140,7 @@ TEST_CASE("testing minus")
     }
 }
 
-TEST_CASE("testing inverse")
+TEST_CASE("inverse")
 {
 	constexpr auto isPositive = [](auto x) constexpr { return x > 0; };
 
@@ -161,7 +161,7 @@ TEST_CASE("testing inverse")
 	}
 }
 
-TEST_CASE("testing superposition")
+TEST_CASE("superposition")
 {
 	SUBCASE("basics")
 	{
@@ -192,7 +192,7 @@ TEST_CASE("testing superposition")
 	}
 }
 
-TEST_CASE("testing composition")
+TEST_CASE("composition")
 {
 	auto id = Identity{};
 	
@@ -232,7 +232,7 @@ TEST_CASE("testing composition")
 	}
 }
 
-TEST_CASE("testing equals")
+TEST_CASE("equals")
 {
 	SUBCASE("basics")
 	{
@@ -252,7 +252,7 @@ TEST_CASE("testing equals")
 	}
 }
 
-TEST_CASE("testing differs")
+TEST_CASE("differs")
 {
     SUBCASE("basics")
     {
@@ -272,7 +272,7 @@ TEST_CASE("testing differs")
     }
 }
 
-TEST_CASE("testing matches")
+TEST_CASE("matches")
 {
 	struct Item
 	{
@@ -286,7 +286,7 @@ TEST_CASE("testing matches")
 	CHECK(!matchesTarget(second));
 }
 
-TEST_CASE("testing curry")
+TEST_CASE("curry")
 {
 	SUBCASE("basics")
 	{
@@ -354,7 +354,7 @@ TEST_CASE("testing curry")
 	}
 }
 
-TEST_CASE("testing flip")
+TEST_CASE("flip")
 {
 	SUBCASE("basics")
 	{
@@ -382,7 +382,7 @@ TEST_CASE("testing flip")
 	}
 }
 
-TEST_CASE("testing allOf and anyOf")
+TEST_CASE("allOf and anyOf")
 {
 	constexpr auto isPositive = [](auto x) constexpr { return x > 0; };
 	constexpr auto isEven = [](auto x) constexpr { return x % 2 == 0; };
@@ -419,7 +419,7 @@ TEST_CASE("testing allOf and anyOf")
 	}
 }
 
-TEST_CASE("testing bindFirst")
+TEST_CASE("bindFirst")
 {
     auto f = bindFirst(std::plus{}, 1);
 
