@@ -87,7 +87,7 @@ std::for_each(std::cbegin(items), std::cend(items), save);
   using List = std::forward_list<int>;
 
   //some existing function we can reuse
-  auto insertBack = [](auto x, auto&& container) -> decltype(auto)
+  auto insertFront = [](auto x, auto&& container) -> decltype(auto)
   {
      container.push_front(x);
      return std::move(container);
@@ -97,7 +97,7 @@ std::for_each(std::cbegin(items), std::cend(items), save);
   auto reversedNums = std::accumulate(std::cbegin(nums),
                                       std::cend(nums),
                                       List{},
-                                      flip(insertBack));
+                                      flip(insertFront));
 
   CHECK(reversedNums == List{ 5, 4, 3, 2, 1 });
   ```
