@@ -69,15 +69,13 @@ namespace IDragnev::Functional
         return compose(compose(f, g), funs...);
     }
 
-    template <typename Predicate>
-    constexpr inline
-    auto inverse(Predicate p) noexcept(std::is_nothrow_copy_constructible_v<Predicate>)
+    inline constexpr auto inverse = [](auto predicate) noexcept(std::is_nothrow_copy_constructible_v<decltype(predicate)>)
     {
-        return[p](auto&&... args) constexpr noexcept(std::is_nothrow_invocable_v<decltype(p), decltype(args)...>)
+        return[predicate](auto&&... args) noexcept(std::is_nothrow_invocable_v<decltype(predicate), decltype(args)...>)
         {
-            return !p(std::forward<decltype(args)>(args)...);
+            return !predicate(std::forward<decltype(args)>(args)...);
         };
-    }
+    };
 
     namespace Detail
     {
