@@ -40,9 +40,9 @@ namespace IDragnev::Functional
         {
             using Detail::andAll;
             static_assert(andAll(std::is_invocable_v<decltype(funs), decltype(args)...>...),
-                "Incompatible arguments given to Gs or their signatures are incompatible");
+                          "Incompatible arguments given to Gs or their signatures are incompatible");
             static_assert(std::is_invocable_v<decltype(f), std::invoke_result_t<decltype(funs), decltype(args)...>...>,
-                "F and Gs have incompatible signatures");
+                          "F and Gs have incompatible signatures");
 
             return (invoke)(f, (invoke)(funs, args...)...);
         };
