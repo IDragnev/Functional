@@ -128,7 +128,7 @@ namespace IDragnev::Functional
     {
         inline constexpr auto makePredicateCombinator = [](auto op) noexcept(std::is_nothrow_copy_constructible_v<decltype(op)>)
         {
-            return[op](auto... predicates) constexpr noexcept(areNothrowCopyConstructible<decltype(op), decltype(predicates)...>)
+            return[op](auto... predicates) constexpr noexcept(noexcept(superpose(op, predicates...)))
             {
                 return superpose(op, predicates...);
             };
