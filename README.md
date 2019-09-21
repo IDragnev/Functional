@@ -87,17 +87,17 @@ std::for_each(std::cbegin(items), std::cend(items), save);
   using List = std::forward_list<int>;
 
   //some existing function we can reuse
-  auto insertFront = [](auto x, auto&& container) -> decltype(auto)
+  const auto insertFront = [](auto x, auto&& container)
   {
      container.push_front(x);
      return std::move(container);
   };
-  auto nums = { 1, 2, 3, 4, 5 };
+  const auto nums = List{ 1, 2, 3, 4, 5 };
 
-  auto reversedNums = std::accumulate(std::cbegin(nums),
-                                      std::cend(nums),
-                                      List{},
-                                      flip(insertFront));
+  const auto reversedNums = std::accumulate(std::cbegin(nums),
+                                            std::cend(nums),
+                                            List{},
+                                            flip(insertFront));
 
   CHECK(reversedNums == List{ 5, 4, 3, 2, 1 });
   ```
@@ -145,4 +145,4 @@ std::for_each(std::cbegin(items), std::cend(items), save);
   ```
   There are also the corresponding functions for -, +, %, /, ==, >, >=, <=, !=.
   They all use perfect forwarding and the bound argument is on the right as in Haskell's (==0), (*5) etc.
-### and more. Examples can be found in the [tests](https://github.com/IDragnev/Functional/blob/master/Functional/tests.cpp).
+### and more. Examples can be found in the [tests](https://github.com/IDragnev/Functional/blob/master/tests/functional.cpp).
