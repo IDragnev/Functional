@@ -1,8 +1,9 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 
-#include "Functional.h"
+#include "include/functional.hpp"
 #include <algorithm>
+#include <functional>
 #include <numeric>
 #include <string>
 #include <vector>
@@ -36,7 +37,7 @@ TEST_CASE("invoke")
 
     SUBCASE("with a regular function")
     {
-        auto f = [](auto x) { return x + 1; };
+        const auto f = [](auto x) { return x + 1; };
 
         CHECK(invoke(f, 10) == 11);
     }
@@ -44,7 +45,7 @@ TEST_CASE("invoke")
     SUBCASE("with reference wrapper")
     {
         struct HeavyObject { } x;
-        auto f = [](const HeavyObject&) { return true; };
+        const auto f = [](const HeavyObject&) { return true; };
 
         CHECK((invoke)(f, std::cref(x)));
     }
@@ -98,7 +99,7 @@ TEST_CASE("plus")
     SUBCASE("plus uses perfect forwarding")
     {
         auto source = "123"s;
-        auto f = plus("456");
+        const auto f = plus("456");
 
         auto result = f(std::move(source));
 
@@ -132,7 +133,7 @@ TEST_CASE("minus")
 
         const auto f = minus(1);
 
-        auto result = f(X{});
+        const auto result = f(X{});
 
         CHECK(result == 1);
     }
@@ -163,8 +164,8 @@ TEST_CASE("superposition")
 {
     SUBCASE("basics")
     {
-        auto f = superpose(std::greater_equal{}, std::multiplies{}, std::plus{});
-        auto g = superpose(std::greater_equal{}, std::plus{}, std::multiplies{});
+        const auto f = superpose(std::greater_equal{}, std::multiplies{}, std::plus{});
+        const auto g = superpose(std::greater_equal{}, std::plus{}, std::multiplies{});
 
         CHECK(f(2, 3));
         CHECK(!g(2, 3));
@@ -175,7 +176,7 @@ TEST_CASE("superposition")
         const auto max = [](const auto& x, const auto& y) -> const auto& { return x >= y ? x : y; };
         const auto x = 1;
 
-        auto g = superpose(max, identity, identity);
+        const auto g = superpose(max, identity, identity);
 
         const auto& result = g(x);
 
@@ -192,17 +193,17 @@ TEST_CASE("composition")
 {
     SUBCASE("basics")
     {
-        auto toString = [](auto num) { return std::to_string(num); };
+        const auto toString = [](auto num) { return std::to_string(num); };
 
         // f = plus789 * plus456 * toString * identity
-        auto f = compose(plus("789"s), plus("456"s), toString, identity);
+        const auto f = compose(plus("789"s), plus("456"s), toString, identity);
 
         CHECK(f(123) == "123456789"s);
     }
 
     SUBCASE("composition handles reference return types")
     {
-        auto f = compose(identity, identity, identity);
+        const auto f = compose(identity, identity, identity);
         auto x = 10;
 
         int&& y = f(std::move(x));
@@ -210,9 +211,9 @@ TEST_CASE("composition")
 
     SUBCASE("the result of compose uses perfect forwarding on its arguments")
     {
-        auto f = [](int&& x) -> int&& { return std::move(x); };
+        const auto f = [](int&& x) -> int&& { return std::move(x); };
 
-        auto g = compose(plus(1), f);
+        const auto g = compose(plus(1), f);
 
         CHECK(g(1) == 2);
     }
@@ -273,8 +274,8 @@ TEST_CASE("matches")
         std::string key = "target";
     } first, second{ "s" };
 
-    auto extractKey = [](const auto& x) { return x.key; };
-    auto matchesTarget = matches(first.key, extractKey);
+    const auto extractKey = [](const auto& x) { return x.key; };
+    const auto matchesTarget = matches(first.key, extractKey);
 
     CHECK(matchesTarget(first));
     CHECK(!matchesTarget(second));
@@ -284,9 +285,9 @@ TEST_CASE("curry")
 {
     SUBCASE("basics")
     {
-        auto sum = [](auto x, auto y, auto z) { return x + y + z; };
+        const auto sum = [](auto x, auto y, auto z) { return x + y + z; };
 
-        auto curriedSum = curry(sum);
+        const auto curriedSum = curry(sum);
 
         CHECK(curriedSum(1, 2, 3) == 6);
         CHECK(curriedSum(1, 2)(3) == 6);
@@ -297,7 +298,7 @@ TEST_CASE("curry")
     SUBCASE("the curried function captures by forwarding"
             "and then moves all the arguments on invocation")
     {
-        auto f = [](int&& x, std::string&& y) { return x; };
+        const auto f = [](int&& x, std::string&& y) { return x; };
         const auto x = 1;
 
         const auto curriedF = curry(f);
@@ -339,10 +340,10 @@ TEST_CASE("curry")
             const int x = 10;
         } nonCopiable;
 
-        auto f = [](const NonCopiable& x, int y, int z) { return x.plus(y, z); };
+        const auto f = [](const NonCopiable& x, int y, int z) { return x.plus(y, z); };
 
-        auto curriedF = curry(f);
-        auto fWithBoundX = curriedF(std::cref(nonCopiable));
+        const auto curriedF = curry(f);
+        const auto fWithBoundX = curriedF(std::cref(nonCopiable));
 
         CHECK(fWithBoundX(1, 2) == 13);
     }
@@ -355,19 +356,20 @@ TEST_CASE("flip")
         using List = std::forward_list<int>;
 
         //some existing function we can reuse
-        auto insertFront = [](auto x, auto&& container) -> decltype(auto)
+        const auto insertFront = [](auto x, auto&& container) 
         {
             container.push_front(x);
             return std::move(container);
         };
-        auto nums = { 1, 2, 3, 4, 5 };
+        const auto nums = List{ 1, 2, 3, 4, 5 };
+        const auto reversedNums = List{ 5, 4, 3, 2, 1 };
 
-        auto reversedNums = std::accumulate(std::cbegin(nums),
+        const auto result = std::accumulate(std::cbegin(nums),
                                             std::cend(nums),
                                             List{},
                                             flip(insertFront));
 
-        CHECK(reversedNums == List{ 5, 4, 3, 2, 1 });
+        CHECK(result == reversedNums);
     }
 
     SUBCASE("computing at compile time")
@@ -386,18 +388,18 @@ TEST_CASE("allOf and anyOf")
     SUBCASE("allOf basics")
     {
 
-        auto pos = std::find_if(std::cbegin(nums),
-                                std::cend(nums),
-                                allOf(isPositive, isEven));
+        const auto pos = std::find_if(std::cbegin(nums),
+                                      std::cend(nums),
+                                      allOf(isPositive, isEven));
 
         CHECK(pos == std::cbegin(nums) + 4);
     }
 
     SUBCASE("anyOf basics")
     {
-        auto pos = std::find_if(std::cbegin(nums),
-                                std::cend(nums),
-                                anyOf(isPositive, isEven));
+        const auto pos = std::find_if(std::cbegin(nums),
+                                      std::cend(nums),
+                                      anyOf(isPositive, isEven));
 
         CHECK(pos == std::cbegin(nums) + 1);
     }
@@ -415,7 +417,7 @@ TEST_CASE("allOf and anyOf")
 
 TEST_CASE("bindFirst")
 {
-    auto f = bindFirst(std::plus{}, 1);
+    const auto f = bindFirst(std::plus{}, 1);
 
     CHECK(f(2) == 3);
 }

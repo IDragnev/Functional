@@ -1,7 +1,7 @@
 #ifndef __FUNCTIONAL_H_INCLUDED__
 #define __FUNCTIONAL_H_INCLUDED__
 
-#include "invoke.h"
+#include "invoke.hpp"
 #include <utility>
 
 namespace IDragnev::Functional
