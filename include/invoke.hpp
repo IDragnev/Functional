@@ -1,5 +1,4 @@
-﻿#ifndef __MY_INVOKE_H_INCLUDED__
-#define __MY_INVOKE_H_INCLUDED__
+﻿#pragma once
 
 #include <type_traits>
 
@@ -78,5 +77,3 @@ namespace IDragnev::Functional
         }
     }
 }
-
-#endif //__MY_INVOKE_H_INCLUDED__

@@ -1,5 +1,4 @@
-#ifndef __FUNCTIONAL_H_INCLUDED__
-#define __FUNCTIONAL_H_INCLUDED__
+#pragma once
 
 #include "invoke.hpp"
 #include <utility>
@@ -172,5 +171,3 @@ namespace IDragnev::Functional
         return compose(equals(std::move(key)), keyExtractor);
     };
 }
-
-#endif //__FUNCTIONAL_H_INCLUDED__
