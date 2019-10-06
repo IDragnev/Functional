@@ -1,5 +1,5 @@
 # Functional
-## Useful higher-order functions and function objects for easier functional programming in C++17, most of which can be used at compile time.   
+## Useful higher-order functions and function objects for easier functional programming in C++20, most of which can be used at compile time.   
 
 ## You can:       
   ### use a constexpr version of [std::invoke](https://en.cppreference.com/w/cpp/utility/functional/invoke)   
