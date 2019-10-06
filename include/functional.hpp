@@ -102,15 +102,21 @@ namespace IDragnev::Functional
     inline constexpr auto allOf = Detail::makePredicateCombinator(Detail::andAll);
     inline constexpr auto anyOf = Detail::makePredicateCombinator(Detail::orAll);
 
-    inline const auto bindFirst = [](auto f, auto arg) noexcept(std::is_nothrow_copy_constructible_v<decltype(f)> &&
-                                                                std::is_nothrow_move_constructible_v<decltype(arg)>)
+    inline const auto bindFront = [](auto f, auto&&... args) 
     {
-        return[f, first = std::move(arg)](auto&&... rest)
+        return[f, ...bound = std::forward<decltype(args)>(args)](auto&&... rest) -> decltype(auto)
         {
-            static_assert(std::is_invocable_v<decltype(f), decltype(first), decltype(rest)...>,
+            static_assert(std::is_invocable_v<decltype(f), decltype(bound)..., decltype(rest)...>,
                           "Incompatible arguments supplied");
-            return (invoke)(f, first, std::forward<decltype(rest)>(rest)...);
+            return (invoke)(f, bound..., std::forward<decltype(rest)>(rest)...);
         };
+    };
+
+    inline const auto bindFirst = [](auto&& f, auto&& arg)
+    {
+        using F = decltype(f);
+        using Arg = decltype(arg);
+        return bindFront(std::forward<F>(f), std::forward<Arg>(arg));
     };
 
     namespace Detail

@@ -415,9 +415,31 @@ TEST_CASE("allOf and anyOf")
     }
 }
 
-TEST_CASE("bindFirst")
+TEST_CASE("bindFront")
 {
-    const auto f = bindFirst(std::plus{}, 1);
+    SUBCASE("basics")
+    {
+        const auto f = bindFront(std::plus{}, 1);
 
-    CHECK(f(2) == 3);
+        CHECK(f(2) == 3);
+    }
+
+    SUBCASE("multiple invocations")
+    {
+        const auto sum = [](auto x, auto y, auto z)
+        {
+            return x + y + z;
+        };
+
+        const auto sumWith3 = bindFront(sum, 1, 2);
+        const auto nums = std::vector{ 1, 2, 3 };
+        auto result = std::vector<int>(nums.size());
+
+        std::transform(std::cbegin(nums),
+                       std::cend(nums),
+                       std::begin(result),
+                       sumWith3);
+
+        CHECK(result == std::vector{4, 5, 6});
+    }
 }
