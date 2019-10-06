@@ -1,6 +1,7 @@
 #pragma once
 
 #include "invoke.hpp"
+#include "curry.hpp"
 #include <utility>
 
 namespace IDragnev::Functional
@@ -75,42 +76,6 @@ namespace IDragnev::Functional
             return !predicate(std::forward<decltype(args)>(args)...);
         };
     };
-
-    namespace Detail
-    {
-        template <typename Callable, typename ArgsTuple>
-        inline constexpr bool isInvocableWithPackedArgs = false;
-
-        template <typename Callable, typename... Args>
-        inline constexpr bool isInvocableWithPackedArgs<Callable, std::tuple<Args...>> = std::is_invocable_v<Callable, Args...>;
-
-        template <typename Callable, typename... Args>
-        auto curryImpl(Callable f, std::tuple<Args...>&& t)
-        {
-            return[f, boundArgs = std::move(t)](auto&&... rest) -> decltype(auto)
-            {
-                auto newArgs = std::make_tuple(std::forward<decltype(rest)>(rest)...);
-                auto args = std::tuple_cat(boundArgs, std::move(newArgs));
-
-                using ArgsTuple = decltype(std::tuple_cat(boundArgs, newArgs));
-
-                if constexpr (isInvocableWithPackedArgs<Callable, ArgsTuple>)
-                {
-                    return std::apply(f, std::move(args));
-                }
-                else
-                {
-                    return Detail::curryImpl(f, std::move(args));
-                }
-            };
-        }
-    }
-
-    template <typename Callable>
-    inline auto curry(Callable f)
-    {
-        return Detail::curryImpl(f, {});
-    }
 
     inline constexpr auto flip = [](auto f) noexcept
     {

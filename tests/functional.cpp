@@ -295,10 +295,10 @@ TEST_CASE("curry")
         CHECK(curriedSum(1)(2)(3) == 6);
     }
 
-    SUBCASE("the curried function captures by forwarding"
-            "and then moves all the arguments on invocation")
+    SUBCASE("the curried function captures by forwarding,"
+            "copies the bound arguments and forwards the new arguments on invocation")
     {
-        const auto f = [](int&& x, std::string&& y) { return x; };
+        const auto f = [](int x, std::string&& y) { return x; };
         const auto x = 1;
 
         const auto curriedF = curry(f);

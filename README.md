@@ -28,10 +28,10 @@
    ```
   ### compose any number of functions:  
   ```C++
-  auto toString = [](auto num) { return std::to_string(num); };
+  const auto toString = [](auto num) { return std::to_string(num); };
 
   // f = plus789 * plus456 * toString * id
-  auto f = compose(plus("789"s), plus("456"s), toString, id);
+  const auto f = compose(plus("789"s), plus("456"s), toString, id);
   
   CHECK(f(123) == "123456789"s);
   ```
@@ -44,9 +44,9 @@ public:
     int id() const { /* ... */ }
 };
 
-auto itemSaver = [](auto id, const auto& filename) { /* ... */ };
-auto correspondingFile = [](const Item* item) -> std::string { /* ... */ };
-auto save = superpose(itemSaver, &Item::id, correspondingFile);
+const auto itemSaver = [](auto id, const auto& filename) { /* ... */ };
+const auto correspondingFile = [](const Item* item) -> std::string { /* ... */ };
+const auto save = superpose(itemSaver, &Item::id, correspondingFile);
 
 std::vector<Item*> items;
 //...
@@ -54,14 +54,14 @@ std::for_each(std::cbegin(items), std::cend(items), save);
 ```
   ### combine any number of existing predicates:  
 ```C++
- auto isPositive = [](auto x) { return x > 0; };
- auto isEven = [](auto x) { return x % 2 == 0; };
+ const auto isPositive = [](auto x) { return x > 0; };
+ const auto isEven = [](auto x) { return x % 2 == 0; };
 
  const auto nums = std::vector<int>{ -1, -2, 0, 1, 2, 3, 4 };
 
- auto pos = std::find_if(std::cbegin(nums),
-                         std::cend(nums),
-                         allOf(isPositive, isEven));
+ const auto pos = std::find_if(std::cbegin(nums),
+                               std::cend(nums),
+                               allOf(isPositive, isEven));
 
  CHECK(pos == std::cbegin(nums) + 4);
  
@@ -73,12 +73,12 @@ std::for_each(std::cbegin(items), std::cend(items), save);
   ```
   ### inverse existing predicates:
   ```C++
-  auto isPositive = [](auto x) { return x > 0; };
+  const auto isPositive = [](auto x) { return x > 0; };
   const int nums[] = { 1, 2, 0, -1, 2 };
 
-  auto it = std::find_if(std::begin(nums), 
-                         std::end(nums), 
-                         inverse(isPositive));
+  const auto it = std::find_if(std::cbegin(nums), 
+                               std::cend(nums), 
+                               inverse(isPositive));
 
   CHECK(it == nums + 2);
   ```
@@ -113,14 +113,14 @@ std::for_each(std::cbegin(items), std::cend(items), save);
   
   std::vector<Person*> people;
   //...
-  auto targetId = someFunction();
-  auto matchesTargetId = matches(targetId, &Person::id);
-  auto pos = std::find_if(std::cbegin(people),
-                          std::cend(people),
-                          matchesTargetId);
+  const auto targetId = someFunction();
+  const auto matchesTargetId = matches(targetId, &Person::id);
+  const auto pos = std::find_if(std::cbegin(people),
+                                std::cend(people),
+                                matchesTargetId);
   //...
-  auto targetName = otherFunction();
-  auto matchesTargetName = matches(std::move(targetName), &Person::name);
+  const auto targetName = otherFunction();
+  const auto matchesTargetName = matches(std::move(targetName), &Person::name);
   pos = std::find_if(std::cbegin(people),
                      std::cend(people),
                      matchesTargetName);
