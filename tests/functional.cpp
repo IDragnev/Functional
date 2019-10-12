@@ -443,3 +443,37 @@ TEST_CASE("bindFront")
         CHECK(result == std::vector{4, 5, 6});
     }
 }
+
+TEST_CASE("firstOf")
+{
+    struct First { };
+    struct Second { };
+    struct Third { };
+
+    SUBCASE("basics")
+    {
+        constexpr auto f = firstOf(
+            [](First) { return 1; },
+            [](Second) { return 2; },
+            [](Third) { return 3; }
+        );
+
+        static_assert(f(First{}) == 1);
+        static_assert(f(Second{}) == 2);
+        static_assert(f(Third{}) == 3);
+    }
+
+    SUBCASE("deleting an overload")
+    {
+        constexpr auto f = firstOf(
+            [](First) { return 1; },
+            Deleted([](Second) { return 2; }),
+            [](Third) { return 3; }
+        );
+        using F = decltype(f);
+        
+        static_assert(!std::is_invocable_v<F, Second>);
+        static_assert(f(First{}) == 1);
+        static_assert(f(Third{}) == 3);
+    }
+}

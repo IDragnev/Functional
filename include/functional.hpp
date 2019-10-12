@@ -2,6 +2,7 @@
 
 #include "invoke.hpp"
 #include "curry.hpp"
+#include "firstOf.hpp"
 #include <utility>
 
 namespace IDragnev::Functional
