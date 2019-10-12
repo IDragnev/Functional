@@ -126,6 +126,22 @@ std::for_each(std::cbegin(items), std::cend(items), save);
                      matchesTargetName);
   ```
   
+
+  ### build overload sets on the fly:
+  ```C++
+  const auto f = firstOf(
+    [](int x) { /*...*/ },
+    [](const std::string& x) { /*...*/ },
+    [](SomeClass) { /*...*/ }
+  );
+
+  const auto g = firstOf(
+    [](const std::string& x) { /*...*/ },
+    Deleted([](int x) { /*...*/ }),   //propagates deletion for int
+    [](SomeClass) { /*...*/ }
+  );
+  ```
+
   ### write more expressive code:
   Instead of
   ```C++
