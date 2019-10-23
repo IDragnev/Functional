@@ -28,7 +28,7 @@ namespace IDragnev::Functional
 
         template <typename... Ts>
         inline constexpr bool areNothrowCopyConstructible = andAll(std::is_nothrow_copy_constructible_v<Ts>...);
-    }
+    } //namespace Detail
 
     template <typename F>
     F superpose(F&&) = delete;
@@ -50,8 +50,7 @@ namespace IDragnev::Functional
     }
 
     template <typename F, typename G>
-    constexpr inline
-    auto compose(F f, G g) noexcept(Detail::areNothrowCopyConstructible<F, G>)
+    constexpr auto compose(F f, G g) noexcept(Detail::areNothrowCopyConstructible<F, G>)
     {
         return[f, g](auto&&... args) constexpr -> decltype(auto)
         {
@@ -98,10 +97,11 @@ namespace IDragnev::Functional
                 return superpose(op, predicates...);
             };
         };
-    }
+    } //namespace Detail
 
     inline constexpr auto allOf = Detail::makePredicateCombinator(Detail::andAll);
     inline constexpr auto anyOf = Detail::makePredicateCombinator(Detail::orAll);
+    inline constexpr auto noneOf = compose(inverse, anyOf);
 
     inline const auto bindFront = [](auto f, auto&&... args) 
     {
@@ -123,7 +123,7 @@ namespace IDragnev::Functional
     namespace Detail
     {
         inline const auto makeBinaryFunctionRightArgumentBinder = compose(curry(bindFirst), flip);
-    }
+    } //namespace Detail
 
     inline const auto plus = Detail::makeBinaryFunctionRightArgumentBinder(std::plus{});
     inline const auto minus = Detail::makeBinaryFunctionRightArgumentBinder(std::minus{});
@@ -142,4 +142,4 @@ namespace IDragnev::Functional
     {
         return compose(equals(std::move(key)), keyExtractor);
     };
-}
+} //namespace IDragnev::Functional

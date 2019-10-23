@@ -22,16 +22,13 @@ namespace IDragnev::Functional
         > constexpr decltype(auto)
         invokeMemberFunction(Ret C::*f, T&& obj, Args&&... args)
         {
-            if constexpr (std::is_base_of_v<C, std::decay_t<T>>)
-            {
+            if constexpr (std::is_base_of_v<C, std::decay_t<T>>) {
                 return (obj.*f)(std::forward<Args>(args)...);
             }
-            else if constexpr (isReferenceWrapper<std::decay_t<T>>)
-            {
+            else if constexpr (isReferenceWrapper<std::decay_t<T>>) {
                 return (obj.get().*f)(std::forward<Args>(args)...);
             }
-            else //pointer
-            {
+            else { //pointer
                 return ((*obj).*f)(std::forward<Args>(args)...);
             }
         }
@@ -41,39 +38,33 @@ namespace IDragnev::Functional
                   typename T
         > constexpr decltype(auto) invokeMemberPointer(MemberT C::*f, T&& obj)
         {
-            if constexpr (std::is_base_of_v<C, std::decay_t<T>>)
-            {
+            if constexpr (std::is_base_of_v<C, std::decay_t<T>>) {
                 return obj.*f;
             }
-            else if constexpr (isReferenceWrapper<std::decay_t<T>>)
-            {
+            else if constexpr (isReferenceWrapper<std::decay_t<T>>) {
                 return obj.get().*f;
             }
-            else //pointer
-            {
+            else { //pointer
                 return (*obj).*f;
             }
         }
-    }
+    } //namespace Detail
 
     template <typename F, typename... Args>
     constexpr std::invoke_result_t<F, Args...>
     invoke(F&& f, Args&&... args) noexcept(std::is_nothrow_invocable_v<F, Args...>)
     {
-        if constexpr (std::is_member_function_pointer_v<std::remove_reference_t<F>>)
-        {
+        if constexpr (std::is_member_function_pointer_v<std::remove_reference_t<F>>) {
             return Detail::invokeMemberFunction(std::forward<F>(f),
                                                 std::forward<Args>(args)...);
         }
         else if constexpr (std::is_member_object_pointer_v<std::remove_reference_t<F>> &&
-                           sizeof...(Args) == 1)
-        {
+                           sizeof...(Args) == 1) {
             return Detail::invokeMemberPointer(std::forward<F>(f),
                                                std::forward<Args>(args)...);
         }
-        else
-        {
+        else {
             return std::forward<F>(f)(std::forward<Args>(args)...);
         }
     }
-}
+} //namespace IDragnev::Functional
