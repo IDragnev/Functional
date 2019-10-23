@@ -476,4 +476,18 @@ TEST_CASE("firstOf")
         static_assert(f(First{}) == 1);
         static_assert(f(Third{}) == 3);
     }
+    
+    SUBCASE("implicit conversions are dangerous!")
+    {
+        constexpr auto f = firstOf(
+            [](double) { return 1; },
+            Deleted([](int) { return 2; }),
+            [](Third) { return 3; }
+        );
+        using F = decltype(f);
+        
+        static_assert(std::is_invocable_v<F, int>);
+        static_assert(f(1) == 1);
+        static_assert(f(Third{}) == 3);
+    }
 }
