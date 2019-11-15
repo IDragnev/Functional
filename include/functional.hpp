@@ -63,10 +63,16 @@ namespace IDragnev::Functional
         };
     }
 
-    template <typename F, typename G, typename... Gs>
-    constexpr auto compose(F f, G g, Gs... funs) noexcept(noexcept(compose(f, g)))
+    template <typename F, typename G>
+    inline constexpr auto operator*(F&& f, G&& g) noexcept(noexcept(compose(f, g))) 
     {
-        return compose(compose(f, g), funs...);
+        return compose(std::forward<F>(f), std::forward<G>(g));
+    }
+
+    template <typename F, typename G, typename... Gs>
+    constexpr auto compose(F f, G g, Gs... funs) noexcept(noexcept(((f * g) * ... * funs)))
+    {
+        return ((f * g) * ... * funs);
     }
 
     inline constexpr auto inverse = [](auto predicate) noexcept(std::is_nothrow_copy_constructible_v<decltype(predicate)>)
